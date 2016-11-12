@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import logo from './logo.svg';
 import './App.css';
-import HomeworkList from './components/HomeworkList.js';
+import HomeworkContainer from './components/HomeworkContainer.js';
 
 class App extends Component {
   render() {
@@ -12,7 +12,7 @@ class App extends Component {
           <h2>Hausaufgaben</h2>
         </div>
         <div>
-          <HomeworkList />
+          <HomeworkContainer />
         </div>
       </div>
     );
