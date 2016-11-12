@@ -2,15 +2,33 @@ import React, {Component} from 'react';
 import HomeworkList from './HomeworkList.js';
 
 class HomeworkContainer extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       hwItems: null,
       loading: true,
     };
 
+    var requestBody = [];
+    for (var property in props.credentials) {
+      if (props.credentials.hasOwnProperty(property)) {
+        var encodedKey = encodeURIComponent(property);
+        var encodedValue = encodeURIComponent(props.credentials[property]);
+        requestBody.push(encodedKey + "=" + encodedValue);
+      }
+    }
+    requestBody = requestBody.join("&");
 
-    fetch('/homework/api/homework.php').then(r => r.json())
+    fetch("/homework/api/homework.php", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      body: requestBody
+    }).then(r => {
+      console.log(r);
+      return r.json();
+    })
       .then(data => {
         this.setState({
           hwItems: data,
