@@ -2,20 +2,34 @@ import React, {Component} from 'react';
 import HomeworkList from './HomeworkList.js';
 
 class HomeworkContainer extends Component {
-  render() {
-    const hwitems = [
-      {
-        id: "123098",
-        title: "Kondensatoren Graph",
-        date: "2016-11-14",
-        subject: "Physik",
-        desc: "Graphen zu den Messergebnissen zeichnen",
-      }
-    ];
+  constructor() {
+    super();
+    this.state = {
+      hwItems: null,
+      loading: true,
+    };
 
-    return (
-      <HomeworkList hwitems={hwitems}/>
-    );
+
+    fetch('/homework/api/homework.php').then(r => r.json())
+      .then(data => {
+        this.setState({
+          hwItems: data,
+          loading: false,
+        });
+      })
+      .catch(e => console.log("error: " + e));
+  }
+
+  render() {
+    if (this.state.loading) {
+      return (
+        <h3>Loading...</h3>
+      );
+    } else {
+      return (
+        <HomeworkList hwItems={this.state.hwItems}/>
+      );
+    }
   }
 }
 

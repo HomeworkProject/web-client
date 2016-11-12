@@ -6,16 +6,16 @@ class HomeworkItem extends Component {
     return (
       <div className="homework-item">
         <h4 className="homework-title">
-          {this.props.hwitem.title}
+          {this.props.hwItem.title}
         </h4>
         <div className="homework-date">
-          {this.props.hwitem.date}
+          {this.props.hwItem.date}
         </div>
         <div className="homework-subject">
-          {this.props.hwitem.subject}
+          {this.props.hwItem.subject}
         </div>
         <div className="homework-item-desc">
-          {this.props.hwitem.desc}
+          {this.props.hwItem.desc}
         </div>
       </div>
     );

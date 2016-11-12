@@ -3,10 +3,10 @@ import HomeworkItem from './HomeworkItem.js';
 
 class HomeworkList extends Component {
   render() {
-    const items = this.props.hwitems.map((hwitem) => {
+    const items = this.props.hwItems.map((hwItem) => {
       return (
-        <li key={hwitem.id}>
-          <HomeworkItem hwitem={hwitem}/>
+        <li key={hwItem.id}>
+          <HomeworkItem hwItem={hwItem}/>
         </li>
       )
     });
