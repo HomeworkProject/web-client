@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import logo from './logo.svg';
 import './App.css';
 import HomeworkContainer from './components/HomeworkContainer.js';
-import LoginPage from './components/LoginPage.js';
+import LoginPage from './components/login/LoginPage.js';
 
 class App extends Component {
   constructor() {

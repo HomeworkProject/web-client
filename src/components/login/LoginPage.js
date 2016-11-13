@@ -1,24 +1,54 @@
 import React, {Component} from 'react';
+import ServerSelector from './ServerSelector.js';
+import GroupSelector from './GroupSelector.js';
+import UserPasswordSelector from './UserPasswordSelect.js';
 
 class LoginPage extends Component {
   constructor() {
     super();
 
     this.state = {
-      "server": "",
-      "group": "",
+      server: null,
+      group: null,
       "user": "",
-      "password": ""
+      "password": "",
     };
 
+    this.handleServerSelect = this.handleServerSelect.bind(this);
     this.handleChange = this.handleChange.bind(this);
+    this.handleLogin = this.handleLogin.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  handleServerSelect(server) {
+    this.setState({
+      server: server
+    });
+  }
+
+  handleGroupSelect(group) {
+    this.setState({
+      group: group
+    });
   }
 
   handleChange(element, event) {
     const stateChange = {};
     stateChange[element] = event.target.value;
     this.setState(stateChange);
+  }
+
+  handleLogin(user, password) {
+    // TODO: Check if credentials are valid
+
+    const credentials = {
+      server: this.state.server,
+      group: this.state.group,
+      user: user,
+      password: password
+    };
+
+    this.props.onLogin(credentials);
   }
 
   handleSubmit(event) {
@@ -35,7 +65,24 @@ class LoginPage extends Component {
   }
 
   render() {
-    return (
+    if (this.state.server == null) {
+      return (
+        <ServerSelector onSelect={s => this.handleServerSelect(s)}/>
+      );
+    } else if (this.state.group == null) {
+      return (
+        <GroupSelector server={this.state.server}
+                       onSelect={g => this.handleGroupSelect(g)}/>
+      );
+    } else {
+      return (
+        <UserPasswordSelector server={this.state.server}
+                            group={this.state.group}
+                            onSelect={(u, p) => this.handleLogin(u, p)} />
+      );
+    }
+
+    /*return (
       <form onSubmit={this.handleSubmit}>
         Server:
         <input type="text" value={this.state.server}
@@ -52,7 +99,7 @@ class LoginPage extends Component {
 
         <input type="submit" value="Login"/>
       </form>
-    );
+    );*/
   }
 }
 

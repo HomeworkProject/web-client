@@ -1,32 +1,42 @@
 import React, {Component} from 'react';
 import HomeworkList from './HomeworkList.js';
+import DatePicker from 'react-bootstrap-date-picker';
+import * as Util from '../Util.js';
 
 class HomeworkContainer extends Component {
   constructor(props) {
     super(props);
     this.state = {
       hwItems: null,
-      loading: true,
+      loading: false,
+      date: new Date().toISOString()
     };
+  }
 
-    var requestBody = [];
-    for (var property in props.credentials) {
-      if (props.credentials.hasOwnProperty(property)) {
-        var encodedKey = encodeURIComponent(property);
-        var encodedValue = encodeURIComponent(props.credentials[property]);
-        requestBody.push(encodedKey + "=" + encodedValue);
-      }
-    }
-    requestBody = requestBody.join("&");
+  loadHomework(dateS) {
+    this.setState({
+      loading: true
+    });
+
+    const date = new Date(dateS);
+    const requestParameters = {
+      server: this.props.credentials.server.address,
+      port: this.props.credentials.server.port,
+      group: this.props.credentials.group,
+      user: this.props.credentials.user,
+      password: this.props.credentials.password,
+      dateY: date.getFullYear(),
+      dateM: date.getMonth() + 1,
+      dateD: date.getDate()
+    };
 
     fetch("/homework/api/homework.php", {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded"
       },
-      body: requestBody
+      body: Util.makeRequestBody(requestParameters)
     }).then(r => {
-      console.log(r);
       return r.json();
     })
       .then(data => {
@@ -38,16 +48,34 @@ class HomeworkContainer extends Component {
       .catch(e => console.log("error: " + e));
   }
 
+  handleDatePickerChange(value) {
+    this.setState({date: value});
+
+    this.loadHomework(value);
+  }
+
   render() {
+    let homework;
     if (this.state.loading) {
-      return (
+      homework = (
         <h3>Loading...</h3>
       );
+    } else if (this.state.hwItems == null) {
+      homework = (
+        <h3>Datum auswählen</h3>
+      );
     } else {
-      return (
+      homework = (
         <HomeworkList hwItems={this.state.hwItems}/>
       );
     }
+
+    return (
+      <div>
+        <DatePicker value={this.state.date} onChange={v => this.handleDatePickerChange(v)}/>
+        {homework}
+      </div>
+    );
   }
 }
 
