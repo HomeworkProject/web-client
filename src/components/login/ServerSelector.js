@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
-import {Button, DropdownButton, MenuItem} from 'react-bootstrap';
+import './ServerSelector.css';
+import {Col, ControlLabel, FormGroup, FormControl} from 'react-bootstrap';
 
 class ServerSelector extends Component {
   constructor() {
@@ -20,51 +21,46 @@ class ServerSelector extends Component {
       })
       .catch(e => console.log("error: " + e));
 
-    this.handleDropdownSelect = this.handleDropdownSelect.bind(this);
-    this.handleSelectClick = this.handleSelectClick.bind(this);
+    this.handleChange = this.handleChange.bind(this);
   };
 
-  handleDropdownSelect(serverIndex, event) {
-    this.setState({
-      selectedServer: this.state.availableServers[serverIndex],
-    });
-  }
-
-  handleSelectClick(event) {
-    event.preventDefault();
-
-    if (this.state.selectedServer != null) {
-      this.props.onSelect(this.state.selectedServer);
+  handleChange(event) {
+    let server;
+    if (event.target.value === "none") {
+      server = null;
+    } else {
+      server = this.state.availableServers[event.target.value];
     }
+
+    this.setState({
+      selectedServer: server
+    });
+
+    this.props.onSelect(server);
   }
 
   render() {
-    if (this.state.availableServers == null) {
+    const options = this.state.availableServers ? this.state.availableServers.map((server, i) => {
       return (
-        <h3>Loading...</h3>
+        <option key={i} value={i}>{server.name}</option>
       );
-    } else {
-      const menuItems = this.state.availableServers.map((server, i) => {
-        return (
-          <MenuItem eventKey={i} key={i}>{server.name}</MenuItem>
-        );
-      });
+    }) : [];
 
-      const title = this.state.selectedServer ?
-        this.state.selectedServer.name :
-        "Server auswählen";
+    options.unshift(<option key="none" value="none"> </option>);
 
-      return (
-        <div>
-          <DropdownButton id="dropdown-server-select"
-              title={title}
-              onSelect={(eK, e) => this.handleDropdownSelect(eK, e)}>
-            {menuItems}
-          </DropdownButton>
-          <Button onClick={e => this.handleSelectClick(e)}>Auswählen</Button>
-        </div>
-      );
-    }
+    return (
+      <FormGroup controlId="server-select">
+        <Col componentClass={ControlLabel} sm={2}>
+          Server:
+        </Col>
+        <Col sm={8}>
+          <FormControl componentClass="select"
+                       onChange={this.handleChange}>
+            {options}
+          </FormControl>
+        </Col>
+      </FormGroup>
+    );
   }
 }
 

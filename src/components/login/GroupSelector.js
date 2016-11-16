@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Button, DropdownButton, MenuItem} from 'react-bootstrap';
+import {Col, ControlLabel, FormGroup, FormControl} from 'react-bootstrap';
 import * as Util from '../../Util.js';
 
 class GroupSelector extends Component {
@@ -9,11 +9,22 @@ class GroupSelector extends Component {
     this.state = {
       groups: null,
       selectedGroup: null,
+      loading: false,
     };
 
+    this.handleChange = this.handleChange.bind(this);
+  }
+
+  loadGroups() {
+    if (this.state.loading) return;
+
+    this.setState({
+      loading: true
+    });
+
     const requestParameters = {
-      server: props.server.address,
-      port: props.server.port
+      server: this.props.server.address,
+      port: this.props.server.port
     };
 
     fetch("/homework/api/groups.php", {
@@ -25,54 +36,56 @@ class GroupSelector extends Component {
     }).then(r => r.json())
       .then(data => {
         this.setState({
-          groups: data
+          groups: data,
+          loading: false
         });
       }).catch(e => console.log("error: " + e));
   }
 
-  handleDropdownSelect(group, event) {
+  handleChange(event) {
+    let group;
+    if (event.target.value === "none") {
+      group = null;
+    } else {
+      group = event.target.value;
+    }
+
     this.setState({
       selectedGroup: group
     });
-  }
 
-  handleSelectClick(event) {
-    event.preventDefault();
-
-    this.props.onSelect(this.state.selectedGroup);
+    this.props.onSelect(group);
   }
 
   render() {
-    let content;
-    if (this.state.groups == null) {
-      content = (
-        <h3>Loading...</h3>
-      );
-    } else {
-      const menuItems = this.state.groups.map(group => {
-        return (
-          <MenuItem eventKey={group} key={group}>{group}</MenuItem>
-        );
-      });
+    let dropdownDisabled;
 
-      content = (
-        <div>
-          <h3>Gruppe auswählen:</h3>
-          <DropdownButton id="dropdown-group-select"
-                          title={this.state.selectedGroup || "Gruppe auswählen"}
-                          onSelect={(eK, e) => this.handleDropdownSelect(eK, e)}>
-            {menuItems}
-          </DropdownButton>
-          <Button onClick={e => this.handleSelectClick(e)}>Auswählen</Button>
-        </div>
+    const options = this.state.groups ? this.state.groups.map(group => {
+      return (
+        <option key={group} value={group}>{group}</option>
       );
+    }) : [];
+    options.unshift(<option key="none" value="none"> </option>);
+
+    if (this.state.groups == null && this.props.server != null) {
+      this.loadGroups();
     }
 
+    dropdownDisabled = !(this.state.groups != null && this.props.enabled);
+
     return (
-      <div>
-        <h4>Server: {this.props.server.name}</h4>
-        {content}
-      </div>
+      <FormGroup controlId="group-select">
+        <Col componentClass={ControlLabel} sm={2}>
+          Klasse:
+        </Col>
+        <Col sm={8}>
+          <FormControl componentClass="select"
+                       disabled={dropdownDisabled}
+                       onChange={this.handleChange}>
+            {options}
+          </FormControl>
+        </Col>
+      </FormGroup>
     );
   }
 }

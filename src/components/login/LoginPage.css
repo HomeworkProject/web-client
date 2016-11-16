@@ -1,0 +1,11 @@
+.login {
+    text-align: center;
+}
+
+.login-selector {
+    max-width: 500px;
+}
+
+.login-selector label {
+    padding-right: 5px;
+}

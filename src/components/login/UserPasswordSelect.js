@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Button, DropdownButton, MenuItem} from 'react-bootstrap';
+import {Col, ControlLabel, FormGroup, FormControl} from 'react-bootstrap';
 import * as Util from '../../Util.js';
 
 class UserPasswordSelect extends Component {
@@ -9,13 +9,24 @@ class UserPasswordSelect extends Component {
     this.state = {
       availableUsers: null,
       selectedUser: null,
-      password: ""
+      password: "",
+      loading: false,
     };
 
+    this.handleUserChange = this.handleUserChange.bind(this);
+    this.handlePasswordChange = this.handlePasswordChange.bind(this);
+  }
+
+  loadUsers() {
+    if (this.state.loading) return;
+    this.setState({
+      loading: true
+    });
+
     const requestParameters = {
-      server: props.server.address,
-      port: props.server.port,
-      group: props.group
+      server: this.props.server.address,
+      port: this.props.server.port,
+      group: this.props.group
     };
 
     fetch("/homework/api/users.php", {
@@ -27,67 +38,76 @@ class UserPasswordSelect extends Component {
     }).then(r => r.json())
       .then(data => {
         this.setState({
-          availableUsers: data
+          availableUsers: data,
+          loading: false
         });
       })
       .catch(e => console.log("error: " + e));
   }
 
-  handleDropdownSelect(user, event) {
+  handleUserChange(event) {
+    let user;
+    if (event.target.value === "none") {
+      user = null;
+    } else {
+      user = event.target.value;
+    }
+
     this.setState({
       selectedUser: user
-    })
+    });
+
+    this.props.onUserSelect(user);
   }
 
   handlePasswordChange(event) {
     this.setState({
       password: event.target.value
     });
-  }
 
-  handleLoginClick(event) {
-    event.preventDefault();
-
-    if (!this.state.selectedUser || !this.state.password) {
-      return;
-    }
-
-    this.props.onSelect(this.state.selectedUser, this.state.password);
+    this.props.onPasswordChange(event.target.value);
   }
 
   render() {
-    let content;
-    if (this.state.availableUsers == null) {
-      content = (
-        <h3>Loading...</h3>
-      );
-    } else {
-      const menuItems = this.state.availableUsers.map(user => {
-        return (
-          <MenuItem eventKey={user} key={user}>{user}</MenuItem>
-        );
-      });
+    let dropdownDisabled;
 
-      content = (
-        <div>
-          <h3>Benutzer auswählen:</h3>
-          <DropdownButton id="dropdown-user-select"
-                          title={this.state.selectedUser || "Benutzer auswählen"}
-                          onSelect={(eK, e) => this.handleDropdownSelect(eK, e)}>
-            {menuItems}
-          </DropdownButton>
-          <h3>Passwort:</h3>
-          <input type="password" value={this.state.password} onChange={e => this.handlePasswordChange(e)} />
-          <Button onClick={e => this.handleLoginClick(e)}>Login</Button>
-        </div>
+    const options = this.state.availableUsers ? this.state.availableUsers.map(user => {
+      return (
+        <option key={user} value={user}>{user}</option>
       );
+    }) : [];
+
+    options.unshift(<option key="none" value="none"></option>);
+
+    if (this.props.group != null && this.state.availableUsers == null) {
+      this.loadUsers();
     }
+
+    dropdownDisabled = !(this.state.availableUsers != null && this.props.enabled);
 
     return (
       <div>
-        <h4>Server: {this.props.server.name}</h4>
-        <h4>Gruppe: {this.props.group}</h4>
-        {content}
+        <FormGroup controlId="user-select">
+          <Col componentClass={ControlLabel} sm={2}>
+            Benutzer:
+          </Col>
+          <Col sm={8}>
+            <FormControl componentClass="select"
+                         onChange={this.handleUserChange}
+                         disabled={dropdownDisabled}>
+              {options}
+            </FormControl>
+          </Col>
+        </FormGroup>
+        <FormGroup controlId="password-input">
+          <Col componentClass={ControlLabel} sm={2}>
+            Passwort:
+          </Col>
+          <Col sm={8}>
+            <FormControl type="password"
+                         onChange={this.handlePasswordChange}/>
+          </Col>
+        </FormGroup>
       </div>
     );
   }

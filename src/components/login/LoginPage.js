@@ -1,4 +1,6 @@
 import React, {Component} from 'react';
+import {Button, Form} from 'react-bootstrap';
+import './LoginPage.css';
 import ServerSelector from './ServerSelector.js';
 import GroupSelector from './GroupSelector.js';
 import UserPasswordSelector from './UserPasswordSelect.js';
@@ -10,13 +12,14 @@ class LoginPage extends Component {
     this.state = {
       server: null,
       group: null,
-      "user": "",
-      "password": "",
+      user: null,
+      password: null,
     };
 
     this.handleServerSelect = this.handleServerSelect.bind(this);
-    this.handleChange = this.handleChange.bind(this);
-    this.handleLogin = this.handleLogin.bind(this);
+    this.handleGroupSelect = this.handleGroupSelect.bind(this);
+    this.handleUserSelect = this.handleUserSelect.bind(this);
+    this.handlePasswordChange = this.handlePasswordChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
@@ -32,27 +35,22 @@ class LoginPage extends Component {
     });
   }
 
-  handleChange(element, event) {
-    const stateChange = {};
-    stateChange[element] = event.target.value;
-    this.setState(stateChange);
+  handleUserSelect(value) {
+    this.setState({
+      user: value
+    });
   }
 
-  handleLogin(user, password) {
-    // TODO: Check if credentials are valid
-
-    const credentials = {
-      server: this.state.server,
-      group: this.state.group,
-      user: user,
-      password: password
-    };
-
-    this.props.onLogin(credentials);
+  handlePasswordChange(value) {
+    this.setState({
+      password: value
+    });
   }
 
   handleSubmit(event) {
     event.preventDefault();
+
+    // TODO: Check if credentials are valid
 
     const credentials = {
       server: this.state.server,
@@ -65,41 +63,26 @@ class LoginPage extends Component {
   }
 
   render() {
-    if (this.state.server == null) {
-      return (
-        <ServerSelector onSelect={s => this.handleServerSelect(s)}/>
-      );
-    } else if (this.state.group == null) {
-      return (
-        <GroupSelector server={this.state.server}
-                       onSelect={g => this.handleGroupSelect(g)}/>
-      );
-    } else {
-      return (
-        <UserPasswordSelector server={this.state.server}
-                            group={this.state.group}
-                            onSelect={(u, p) => this.handleLogin(u, p)} />
-      );
-    }
-
-    /*return (
-      <form onSubmit={this.handleSubmit}>
-        Server:
-        <input type="text" value={this.state.server}
-               onChange={(e) => this.handleChange("server", e)}/>
-        Group:
-        <input type="text" value={this.state.group}
-               onChange={(e) => this.handleChange("group", e)}/>
-        User:
-        <input type="text" value={this.state.user}
-               onChange={(e) => this.handleChange("user", e)}/>
-        Password:
-        <input type="password" value={this.state.password}
-               onChange={(e) => this.handleChange("password", e)}/>
-
-        <input type="submit" value="Login"/>
-      </form>
-    );*/
+    return (
+      <div className="login">
+        <h2 className="login-heading">Login</h2>
+        <Form horizontal
+              onSubmit={this.handleSubmit}>
+          <ServerSelector onSelect={s => this.handleServerSelect(s)}/>
+          <GroupSelector enabled={this.state.server != null}
+                         server={this.state.server}
+                         onSelect={g => this.handleGroupSelect(g)}/>
+          <UserPasswordSelector enabled={this.state.group != null}
+                                server={this.state.server}
+                                group={this.state.group}
+                                onUserSelect={u => this.handleUserSelect(u)}
+                                onPasswordChange={v => this.handlePasswordChange(v)}/>
+          <Button type="submit">
+            Login
+          </Button>
+        </Form>
+      </div>
+    )
   }
 }
 
