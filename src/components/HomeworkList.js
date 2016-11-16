@@ -1,21 +1,22 @@
 import React, {Component} from 'react';
+import {ListGroup, ListGroupItem} from 'react-bootstrap';
 import HomeworkItem from './HomeworkItem.js';
 
 class HomeworkList extends Component {
   render() {
     const items = this.props.hwItems.map((hwItem) => {
       return (
-        <li key={hwItem.id}>
+        <ListGroupItem key={hwItem.id}>
           <HomeworkItem hwItem={hwItem}/>
-        </li>
+        </ListGroupItem>
       )
     });
 
     return (
       <div className="homework-list">
-        <ul>
+        <ListGroup componentClass="ul">
           {items}
-        </ul>
+        </ListGroup>
       </div>
     );
   }

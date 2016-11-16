@@ -7,7 +7,7 @@ class HomeworkItem extends Component {
     const strDate = arrDate[2] + "." + arrDate[1] + "." + arrDate[0];
 
     return (
-      <div className="homework-item">
+      <div>
         <h4 className="homework-title">
           {this.props.hwItem.title}
         </h4>
