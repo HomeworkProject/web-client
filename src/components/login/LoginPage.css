@@ -9,3 +9,14 @@
 .login-selector label {
     padding-right: 5px;
 }
+
+.loading-icon {
+    padding-left: 5px;
+    animation: spin 1.5s infinite linear;
+    transform-origin: 63% 50%;
+}
+
+@keyframes spin {
+    from { transform: scale(1) rotate(0deg); }
+    to { transform: scale(1) rotate(360deg); }
+}

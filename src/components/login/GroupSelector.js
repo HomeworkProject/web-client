@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Col, ControlLabel, FormGroup, FormControl} from 'react-bootstrap';
+import {Col, ControlLabel, FormGroup, FormControl, Glyphicon} from 'react-bootstrap';
 import * as Util from '../../Util.js';
 
 class GroupSelector extends Component {
@@ -73,10 +73,14 @@ class GroupSelector extends Component {
 
     dropdownDisabled = !(this.state.groups != null && this.props.enabled);
 
+    const refreshGlyphicon = this.state.loading ?
+      <Glyphicon className="loading-icon" glyph="refresh" /> : null;
+
     return (
       <FormGroup controlId="group-select">
         <Col componentClass={ControlLabel} sm={2}>
           Klasse:
+          {refreshGlyphicon}
         </Col>
         <Col sm={8}>
           <FormControl componentClass="select"

@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import './ServerSelector.css';
-import {Col, ControlLabel, FormGroup, FormControl} from 'react-bootstrap';
+import {Col, ControlLabel, FormGroup, FormControl, Glyphicon} from 'react-bootstrap';
 
 class ServerSelector extends Component {
   constructor() {
@@ -40,7 +40,9 @@ class ServerSelector extends Component {
   }
 
   render() {
-    const options = this.state.availableServers ? this.state.availableServers.map((server, i) => {
+    const doneLoading = this.state.availableServers != null;
+
+    const options = doneLoading ? this.state.availableServers.map((server, i) => {
       return (
         <option key={i} value={i}>{server.name}</option>
       );
@@ -48,13 +50,18 @@ class ServerSelector extends Component {
 
     options.unshift(<option key="none" value="none"> </option>);
 
+    const refreshGlyphicon = doneLoading ? null
+      : <Glyphicon className="loading-icon" glyph="refresh"/>;
+
     return (
       <FormGroup controlId="server-select">
         <Col componentClass={ControlLabel} sm={2}>
           Server:
+          {refreshGlyphicon}
         </Col>
         <Col sm={8}>
           <FormControl componentClass="select"
+                       disabled={!doneLoading}
                        onChange={this.handleChange}>
             {options}
           </FormControl>
