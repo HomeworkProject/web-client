@@ -4,6 +4,7 @@ import './LoginPage.css';
 import ServerSelector from './ServerSelector.js';
 import GroupSelector from './GroupSelector.js';
 import UserPasswordSelector from './UserPasswordSelect.js';
+import * as Util from '../../Util.js';
 
 class LoginPage extends Component {
   constructor() {
@@ -14,6 +15,8 @@ class LoginPage extends Component {
       group: null,
       user: null,
       password: null,
+      tryingLogin: null,
+      loginResult: false,
     };
 
     this.handleServerSelect = this.handleServerSelect.bind(this);
@@ -50,8 +53,6 @@ class LoginPage extends Component {
   handleSubmit(event) {
     event.preventDefault();
 
-    // TODO: Check if credentials are valid
-
     const credentials = {
       server: this.state.server,
       group: this.state.group,
@@ -59,7 +60,36 @@ class LoginPage extends Component {
       password: this.state.password
     };
 
-    this.props.onLogin(credentials);
+    const requestParameters = {
+      server: credentials.server.address,
+      port: credentials.server.port,
+      group: credentials.group,
+      user: credentials.user,
+      password: credentials.password
+    };
+
+    this.setState({
+      tryingLogin: true,
+      loginResult: null
+    });
+
+    fetch("/homework/api/login.php", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      body: Util.makeRequestBody(requestParameters)
+    }).then(r => r.json())
+      .then(data => {
+        this.setState({
+          tryingLogin: false,
+          loginResult: data.status,
+        });
+        if (data.status === "logged_in") {
+          this.props.onLogin(credentials);
+        }
+      }).catch(e => console.log("error: " + e));
+
   }
 
   render() {
@@ -75,6 +105,7 @@ class LoginPage extends Component {
           <UserPasswordSelector enabled={this.state.group != null}
                                 server={this.state.server}
                                 group={this.state.group}
+                                passwordValid={this.state.loginResult !== "invalid_credentials"}
                                 onUserSelect={u => this.handleUserSelect(u)}
                                 onPasswordChange={v => this.handlePasswordChange(v)}/>
           <Button type="submit">

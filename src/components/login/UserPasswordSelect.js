@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Col, ControlLabel, FormGroup, FormControl, Glyphicon} from 'react-bootstrap';
+import {Col, ControlLabel, FormGroup, FormControl, HelpBlock, Glyphicon} from 'react-bootstrap';
 import * as Util from '../../Util.js';
 
 class UserPasswordSelect extends Component {
@@ -88,6 +88,14 @@ class UserPasswordSelect extends Component {
     const refreshGlyphicon = this.state.loading ?
       <Glyphicon className="loading-icon" glyph="refresh"/> : null;
 
+    const validationState = this.props.passwordValid ? null : 'error';
+    const passwordFeedback = this.props.passwordValid ? null : (
+      <FormControl.Feedback />
+    );
+    const passwordHelpBlock = this.props.passwordValid ? null : (
+      <HelpBlock>Falsches Passwort</HelpBlock>
+    );
+
     return (
       <div>
         <FormGroup controlId="user-select">
@@ -103,13 +111,16 @@ class UserPasswordSelect extends Component {
             </FormControl>
           </Col>
         </FormGroup>
-        <FormGroup controlId="password-input">
+        <FormGroup controlId="password-input"
+                   validationState={validationState}>
           <Col componentClass={ControlLabel} sm={2}>
             Passwort:
           </Col>
           <Col sm={8}>
             <FormControl type="password"
                          onChange={this.handlePasswordChange}/>
+            {passwordFeedback}
+            {passwordHelpBlock}
           </Col>
         </FormGroup>
       </div>
