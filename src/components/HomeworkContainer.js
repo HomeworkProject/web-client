@@ -20,11 +20,8 @@ class HomeworkContainer extends Component {
 
     const date = new Date(dateS);
     const requestParameters = {
-      server: this.props.credentials.server.address,
-      port: this.props.credentials.server.port,
-      group: this.props.credentials.group,
-      user: this.props.credentials.user,
-      password: this.props.credentials.password,
+      server: this.props.server.address,
+      port: this.props.server.port,
       dateY: date.getFullYear(),
       dateM: date.getMonth() + 1,
       dateD: date.getDate()
@@ -35,7 +32,8 @@ class HomeworkContainer extends Component {
       headers: {
         "Content-Type": "application/x-www-form-urlencoded"
       },
-      body: Util.makeRequestBody(requestParameters)
+      body: Util.makeRequestBody(requestParameters),
+      credentials: "include"
     }).then(r => {
       return r.json();
     })

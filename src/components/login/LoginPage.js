@@ -24,6 +24,28 @@ class LoginPage extends Component {
     this.handleUserSelect = this.handleUserSelect.bind(this);
     this.handlePasswordChange = this.handlePasswordChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+
+    const storedServer = JSON.parse(localStorage.getItem("server"));
+    if (storedServer != null) {
+      // Try a login, there could still be a cookie with a valid token around
+      const requestParameters = {
+        server: storedServer.address,
+        port: storedServer.port,
+      };
+      fetch("/homework/api/login.php", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: Util.makeRequestBody(requestParameters),
+        credentials: "include"
+      }).then(r => r.json())
+        .then(data => {
+          if (data.status === "logged_in") {
+            this.props.onLogin(storedServer);
+          }
+        }).catch(e => console.log("error: " + e));
+    }
   }
 
   handleServerSelect(server) {
@@ -53,19 +75,12 @@ class LoginPage extends Component {
   handleSubmit(event) {
     event.preventDefault();
 
-    const credentials = {
-      server: this.state.server,
+    const requestParameters = {
+      server: this.state.server.address,
+      port: this.state.server.port,
       group: this.state.group,
       user: this.state.user,
       password: this.state.password
-    };
-
-    const requestParameters = {
-      server: credentials.server.address,
-      port: credentials.server.port,
-      group: credentials.group,
-      user: credentials.user,
-      password: credentials.password
     };
 
     this.setState({
@@ -78,7 +93,8 @@ class LoginPage extends Component {
       headers: {
         "Content-Type": "application/x-www-form-urlencoded"
       },
-      body: Util.makeRequestBody(requestParameters)
+      body: Util.makeRequestBody(requestParameters),
+      credentials: "include"
     }).then(r => r.json())
       .then(data => {
         this.setState({
@@ -86,7 +102,8 @@ class LoginPage extends Component {
           loginResult: data.status,
         });
         if (data.status === "logged_in") {
-          this.props.onLogin(credentials);
+          localStorage.setItem("server", JSON.stringify(this.state.server));
+          this.props.onLogin(this.state.server);
         }
       }).catch(e => console.log("error: " + e));
 

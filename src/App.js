@@ -8,24 +8,24 @@ class App extends Component {
     super();
 
     this.state = {
-      credentials: null,
+      server: null,
     };
 
     this.handleLogin.bind(this);
   }
 
-  handleLogin(credentials) {
+  handleLogin(server) {
     this.setState({
-      credentials: credentials
+      server: server
     });
   }
 
   render() {
     let content;
-    if (this.state.credentials == null) {
-      content = <LoginPage onLogin={c => this.handleLogin(c)}/>;
+    if (this.state.server === null) {
+      content = <LoginPage onLogin={s => this.handleLogin(s)}/>;
     } else {
-      content = <HomeworkContainer credentials={this.state.credentials}/>;
+      content = <HomeworkContainer server={this.state.server}/>;
     }
 
     return (
