@@ -11,7 +11,7 @@ class ServerSelector extends Component {
       selectedServer: null,
     });
 
-    const discoveryUrl = "http://dev.m-lessmann.de/hwserver/providerDiscovery.json";
+    const discoveryUrl = "https://dev.m-lessmann.de/hwserver/providerDiscovery.json";
 
     fetch(discoveryUrl).then(r => r.json())
       .then(availableServers => {

@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
-import HomeworkList from './HomeworkList.js';
+import {Button} from 'react-bootstrap';
 import DatePicker from 'react-bootstrap-date-picker';
+import HomeworkList from './HomeworkList.js';
 import * as Util from '../Util.js';
 
 class HomeworkContainer extends Component {
@@ -9,8 +10,17 @@ class HomeworkContainer extends Component {
     this.state = {
       hwItems: null,
       loading: false,
-      date: new Date().toISOString()
+      date: null,
     };
+
+    this.datePickerDayLabels = ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"];
+    this.datePickerMonthLabels = ["Januar", "Februar", "März", "April",
+      "Mai", "Juni", "Juli", "August", "September", "Oktober",
+      "November", "Dezember"];
+
+    this.handleDatePickerChange = this.handleDatePickerChange.bind(this);
+    this.handleTomorrowClick = this.handleTomorrowClick.bind(this);
+    this.handleAfterTomorrowClick = this.handleAfterTomorrowClick.bind(this);
   }
 
   loadHomework(dateS) {
@@ -52,7 +62,39 @@ class HomeworkContainer extends Component {
     this.loadHomework(value);
   }
 
+  handleTomorrowClick(e) {
+    const today = new Date();
+    const tomorrow = Util.addDays(today, 1);
+    this.setState({
+      date: tomorrow.toISOString()
+    });
+
+    this.loadHomework(tomorrow.toISOString());
+  }
+
+  handleAfterTomorrowClick(e) {
+    const today = new Date();
+    const afterTomorrow = Util.addDays(today, 2);
+    this.setState({
+      date: afterTomorrow.toISOString()
+    });
+
+    this.loadHomework(afterTomorrow.toISOString());
+  }
+
   render() {
+    const selectors = (
+      <div>
+        <DatePicker value={this.state.date} placeholder="Datum auswählen"
+                    onChange={this.handleDatePickerChange}
+                    dayLabels={this.datePickerDayLabels}
+                    monthLabels={this.datePickerMonthLabels}
+                    dateFormat="DD.MM.YYYY" showClearButton={false}/>
+        <Button onClick={this.handleTomorrowClick}>Morgen</Button>
+        <Button onClick={this.handleAfterTomorrowClick}>Übermorgen</Button>
+      </div>
+    );
+
     let homework;
     if (this.state.loading) {
       homework = (
@@ -70,7 +112,7 @@ class HomeworkContainer extends Component {
 
     return (
       <div>
-        <DatePicker value={this.state.date} onChange={v => this.handleDatePickerChange(v)}/>
+        {selectors}
         {homework}
       </div>
     );

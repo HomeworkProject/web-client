@@ -9,3 +9,9 @@ export function makeRequestBody(requestParameters) {
   }
   return requestBody.join("&");
 }
+
+export function addDays(date, days) {
+  const result = new Date(date);
+  result.setDate(result.getDate() + days);
+  return result;
+}
