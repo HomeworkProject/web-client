@@ -30,8 +30,8 @@ class HomeworkContainer extends Component {
 
     const date = new Date(dateS);
     const requestParameters = {
-      server: this.props.server.address,
-      port: this.props.server.port,
+      server: this.props.server.connection.host,
+      port: this.props.server.connection.plainPort,
       dateY: date.getFullYear(),
       dateM: date.getMonth() + 1,
       dateD: date.getDate()

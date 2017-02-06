@@ -24,8 +24,8 @@ class UserPasswordSelect extends Component {
     });
 
     const requestParameters = {
-      server: this.props.server.address,
-      port: this.props.server.port,
+      server: this.props.server.connection.host,
+      port: this.props.server.connection.plainPort,
       group: this.props.group
     };
 

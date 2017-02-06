@@ -27,10 +27,15 @@ class LoginPage extends Component {
 
     const storedServer = JSON.parse(localStorage.getItem("server"));
     if (storedServer != null) {
+      if (!storedServer.hasOwnProperty("connection")) {
+        // Protect against old localStorage entry
+        return;
+      }
+
       // Try a login, there could still be a cookie with a valid token around
       const requestParameters = {
-        server: storedServer.address,
-        port: storedServer.port,
+        server: storedServer.connection.host,
+        port: storedServer.connection.plainPort,
       };
       fetch("/homework/api/login.php", {
         method: "POST",
@@ -76,8 +81,8 @@ class LoginPage extends Component {
     event.preventDefault();
 
     const requestParameters = {
-      server: this.state.server.address,
-      port: this.state.server.port,
+      server: this.state.server.connection.host,
+      port: this.state.server.connection.plainPort,
       group: this.state.group,
       user: this.state.user,
       password: this.state.password

@@ -23,8 +23,8 @@ class GroupSelector extends Component {
     });
 
     const requestParameters = {
-      server: this.props.server.address,
-      port: this.props.server.port
+      server: this.props.server.connection.host,
+      port: this.props.server.connection.plainPort
     };
 
     fetch("/homework/api/groups.php", {
